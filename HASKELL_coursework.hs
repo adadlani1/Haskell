@@ -37,9 +37,61 @@ total_time x y xs = inc_time x (arrange_in_pairs x y xs)
 
 type Candidate = (Point, Point, [Point], Float)
 
-make_candidates :: Point -> Point -> [Point] -> [Candidate]
-make_candidates a b = []
-make_candidates a b (x:xss) = [(a, b, total_time a b x )] ++ make_candidates a b xss
+make_candidates :: Point -> Point -> [[Point]] -> [Candidate]
+make_candidates start_point end_point [] = []
+make_candidates start_point end_point (xs:xss) = [(start_point , end_point, xs, total_time start_point end_point xs )] ++ make_candidates start_point end_point xss
 
+sort_by_time :: [Candidate] -> [Candidate]
+
+
+merge :: Ord a => [a] -> [a] -> [a]
+merge [] ys = ys
+merge xs [] = xs
+merge (x:xs) (y:ys) = if x < y then x : merge xs (y:ys)
+								else y : merge (x:xs) ys
+
+
+msort :: Ord a => [a] -> [a]
+msort [] = []
+msort [a] = [a]
+msort xs = merge (msort ys) (msort zs)
+	where
+		h = div (length xs) 2
+		ys = take h xs
+		zs = drop h xs 
+
+--Part 3--
+
+
+--Part 4--
+
+--crossover :: [Candidate] −> Int −> StdGen −> ([Candidate], StdGen)
+--crossover cs n g = (cs ++ cs_new, g1)
+	--where
+		--pairs = [(( cs !! c1), (cs !! c2)) | c1 <− [0..(n−1)], c2 <− [(c1+1)..(n−1)]]
+		--(cs_new, g1) = cross_pairs pairs g
+
+		
+--cross_pairs :: [( Candidate, Candidate)] −> StdGen −> ([Candidate], StdGen)
+--cross_pairs [] g = ([], g)
+--cross_pairs (cp:cps) g = (c:cs, g2)
+	--where
+		--(c, g1) = cross_pair cp g
+		--(cs, g2) = cross_pairs cps g1
+
+		
+--cross_pair :: (Candidate, Candidate) −> StdGen −> (Candidate, StdGen)
+--cross_pair (( s, e, ps1, _ ), (_, _, ps2, _)) g = (( s, e, ps, t ), g1)
+	--where
+		--(ps, g1) = cross_supp ps1 ps2 g
+		--t = total_time s e ps
+
+		
+--cross_supp :: [Point] −> [Point] −> StdGen −> ([Point], StdGen)
+--cross_supp [] [] g = ([], g)
+--cross_supp (c1:cs1) (c2:cs2) g = (( if r < 0.5 then c1 else c2) : xs, g2)
+	--where
+		--( r , g1) = randomR (0 :: Float, 1 :: Float) g
+		--(xs, g2) = cross_supp cs1 cs2 g1
 
 
