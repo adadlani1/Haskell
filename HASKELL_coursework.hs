@@ -39,26 +39,22 @@ type Candidate = (Point, Point, [Point], Float)
 
 make_candidates :: Point -> Point -> [[Point]] -> [Candidate]
 make_candidates start_point end_point [] = []
-make_candidates start_point end_point (xs:xss) = [(start_point , end_point, xs, total_time start_point end_point xs )] ++ make_candidates start_point end_point xss
+make_candidates start_point end_point (xs:xss) = [(s , e, xs, t s e xs )] ++ make_candidates s e xss
+	where
+		s = start_point
+		e = end_point
+		t = total_time
 
 sort_by_time :: [Candidate] -> [Candidate]
-
-
-merge :: Ord a => [a] -> [a] -> [a]
-merge [] ys = ys
-merge xs [] = xs
-merge (x:xs) (y:ys) = if x < y then x : merge xs (y:ys)
-								else y : merge (x:xs) ys
-
-
-msort :: Ord a => [a] -> [a]
-msort [] = []
-msort [a] = [a]
-msort xs = merge (msort ys) (msort zs)
+sort_by_time [] = []
+sort_by_time (x:xs) = sort_by_time smaller ++ [x] ++ sort_by_time larger
 	where
-		h = div (length xs) 2
-		ys = take h xs
-		zs = drop h xs 
+		smaller = [a | a <- xs, a <= x]
+		larger =  [b | b <- xs, b > x]
+		
+candidate_to_string :: Candidate -> String
+
+
 
 --Part 3--
 
@@ -94,4 +90,9 @@ msort xs = merge (msort ys) (msort zs)
 		--( r , g1) = randomR (0 :: Float, 1 :: Float) g
 		--(xs, g2) = cross_supp cs1 cs2 g1
 
+--Part 5--
+
+
+
+--Part 6--
 
