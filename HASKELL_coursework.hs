@@ -79,7 +79,7 @@ point_to_string :: Point -> String
 point_to_string coordinate = show (fst coordinate) ++ "" ++ show (snd coordinate) ++ "\n"
 
 divide_list :: [Float] -> [Float] -> [[Point]]
-divide_list xs ys | length xs < length ys = [zip xs (take (l) ys)] ++ divide_list (drop (l) ys)
+divide_list xs ys | length xs < length ys = [zip xs (take (l) ys)] ++ divide_list xs (drop (l) ys)
 				  | length xs <= length ys = [zip xs ys]
 						where
 							l = length xs
@@ -93,14 +93,15 @@ divide_list xs ys | length xs < length ys = [zip xs (take (l) ys)] ++ divide_lis
 --along with a desired range of numbers and a random number generator.
 --Takes them as an input 
 
---random_list :: Int −> (Int, Int) −> StdGen −> ([Int], StdGen)
---random_list 0 _ gen = ([], gen)
---random_list n minmax gen = ((r:rs), g2)
-	--where
-		--( r , g) = randomR minmax gen
-		--( rs, g2) = random_list (n−1) minmax g
+random_list :: Int −> (Int, Int) −> StdGen −> ([Int], StdGen)
+random_list 0 _ gen = ([], gen)
+random_list n minmax gen = ((r:rs), g2)
+	where
+		( r , g) = randomR minmax gen
+		( rs, g2) = random_list (n−1) minmax g
 		
---create_random_candidates :: Int -> Point -> Point -> [Float] -> (Float,Float) -> StdGen -> ([Candidate], StdGen)
+create_random_candidates :: Int -> Point -> Point -> [Float] -> (Float,Float) -> StdGen -> ([Candidate], StdGen)
+
 
 
 --Part 4--
