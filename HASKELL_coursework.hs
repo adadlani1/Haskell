@@ -1,9 +1,15 @@
 --Part 1--
 
+--making Point type equal to a 2-tuple of floats
+
 type Point = (Float, Float)
+
 --- working out the velocity of the two points that have been entered---
+
 velocity :: Float -> Float -> Float
 velocity x y = sqrt((9.81 * (x -y)) / 0.5)
+
+-- writing an equation that works out the Euclidian distance between two points
 
 distance :: Point -> Point -> Float
 distance (x1 , y1) (x2 , y2) = sqrt (x'*x' + y'*y')
@@ -11,16 +17,32 @@ distance (x1 , y1) (x2 , y2) = sqrt (x'*x' + y'*y')
 		x' = x1 - x2
 		y' = y1 - y2
 
+-- an equation that takes three float variables and outputs a float that equates to the time between two points 
+		
 time :: Float -> Float -> Float -> Float
 time d v0 v1 = d / ((v0 + v1)/2)
+
+-- initial_pairs takes two points and a list of supporting points and joins them together
 
 initial_pairs :: Point -> Point -> [Point] -> [Point]
 initial_pairs (x1,y1) (x2,y2) xs = [(x1, y1)] ++ xs ++ [(x2,y2)] 
 
+-- pair_func takes a parameter and zips it to itself without the first element
+
 pair_func xs = zip xs (tail xs)
+
+-- arrange_in_pairs takes the start point, end point and a list of supporting points and zips them together
+--For example, ["start"] ++ ["A", "B", "C"] ++ ["end"]
+-- gives ["start", "A", "B", "C", "end"]
+-- zip ["start", "A", "B", "C", "end"] ["A", "B", "C", "end"]
+-- gives [("start, "A"), ("A", "B"), ("B","C"), ("C","end")]
 
 arrange_in_pairs :: Point -> Point -> [Point] -> [(Point, Point)]
 arrange_in_pairs (x1,y1) (x2,y2) xs = pair_func(initial_pairs (x1,y1) (x2,y2) xs)
+
+-- recursive function that takes the starting point , end point and a list of supporting points 
+-- returns the total time it takes for the object to run down the slide. 
+-- total time is the sum of all of the times between each section of straight lines
 
 inc_time :: Point -> [(Point,Point)] -> Float
 inc_time start_point [] = 0
@@ -34,8 +56,12 @@ total_time :: Point -> Point -> [Point] -> Float
 total_time x y xs = inc_time x (arrange_in_pairs x y xs)
 
 --Part 2-- 
+-- Candidate is defined to be a 4-tuple which consists of two Points, a list of Points and a Float
 
 type Candidate = (Point, Point, [Point], Float)
+
+-- make_candidates takes a start point, end point, and a list of supporting points
+-- with a recursive function that returns a list of candidates that has the same length of the list originally inputted
 
 make_candidates :: Point -> Point -> [[Point]] -> [Candidate]
 make_candidates start_point end_point [] = []
@@ -45,6 +71,9 @@ make_candidates start_point end_point (xs:xss) = [(s, e, xs, t s e xs )] ++ make
 		e = end_point
 		t = total_time
 
+--
+		
+		
 sort_by_time :: [Candidate] -> [Candidate]
 sort_by_time [] = []
 sort_by_time (x:xs) = sort_by_time smaller ++ [x] ++ sort_by_time larger
@@ -76,7 +105,7 @@ candidate_to_string candidate = starting_string ++ supporting_string (get_third 
 		time_string = "Time: " ++ show (get_fourth candidate)
 
 point_to_string :: Point -> String
-point_to_string coordinate = show (fst coordinate) ++ "" ++ show (snd coordinate) ++ "\n"
+point_to_string coordinate = show (fst coordinate) ++ " " ++ show (snd coordinate) ++ "\n"
 
 divide_list :: [Float] -> [Float] -> [[Point]]
 divide_list xs ys | length xs < length ys = [zip xs (take (l) ys)] ++ divide_list xs (drop (l) ys)
@@ -101,43 +130,42 @@ random_list n minmax gen = ((r:rs), g2)
 		( rs, g2) = random_list (n−1) minmax g
 		
 create_random_candidates :: Int -> Point -> Point -> [Float] -> (Float,Float) -> StdGen -> ([Candidate], StdGen)
-
+create_random_candidates 
 
 
 --Part 4--
 
---crossover :: [Candidate] −> Int −> StdGen −> ([Candidate], StdGen)
---crossover cs n g = (cs ++ cs_new, g1)
-	--where
-		--pairs = [(( cs !! c1), (cs !! c2)) | c1 <− [0..(n−1)], c2 <− [(c1+1)..(n−1)]]
-		--(cs_new, g1) = cross_pairs pairs g
+crossover :: [Candidate] −> Int −> StdGen −> ([Candidate], StdGen)
+crossover cs n g = (cs ++ cs_new, g1)
+	where
+		pairs = [(( cs !! c1), (cs !! c2)) | c1 <− [0..(n−1)], c2 <− [(c1+1)..(n−1)]]
+		(cs_new, g1) = cross_pairs pairs g
 
 		
---cross_pairs :: [( Candidate, Candidate)] −> StdGen −> ([Candidate], StdGen)
---cross_pairs [] g = ([], g)
---cross_pairs (cp:cps) g = (c:cs, g2)
-	--where
-		--(c, g1) = cross_pair cp g
-		--(cs, g2) = cross_pairs cps g1
+cross_pairs :: [( Candidate, Candidate)] −> StdGen −> ([Candidate], StdGen)
+cross_pairs [] g = ([], g)
+cross_pairs (cp:cps) g = (c:cs, g2)
+	where
+		(c, g1) = cross_pair cp g
+		(cs, g2) = cross_pairs cps g1
 
 		
---cross_pair :: (Candidate, Candidate) −> StdGen −> (Candidate, StdGen)
---cross_pair (( s, e, ps1, _ ), (_, _, ps2, _)) g = (( s, e, ps, t ), g1)
-	--where
-		--(ps, g1) = cross_supp ps1 ps2 g
-		--t = total_time s e ps
+cross_pair :: (Candidate, Candidate) −> StdGen −> (Candidate, StdGen)
+cross_pair (( s, e, ps1, _ ), (_, _, ps2, _)) g = (( s, e, ps, t ), g1)
+	where
+		(ps, g1) = cross_supp ps1 ps2 g
+		t = total_time s e ps
 
 		
---cross_supp :: [Point] −> [Point] −> StdGen −> ([Point], StdGen)
---cross_supp [] [] g = ([], g)
---cross_supp (c1:cs1) (c2:cs2) g = (( if r < 0.5 then c1 else c2) : xs, g2)
-	--where
-		--( r , g1) = randomR (0 :: Float, 1 :: Float) g
-		--(xs, g2) = cross_supp cs1 cs2 g1
+cross_supp :: [Point] −> [Point] −> StdGen −> ([Point], StdGen)
+cross_supp [] [] g = ([], g)
+cross_supp (c1:cs1) (c2:cs2) g = (( if r < 0.5 then c1 else c2) : xs, g2)
+	where
+		( r , g1) = randomR (0 :: Float, 1 :: Float) g
+		(xs, g2) = cross_supp cs1 cs2 g1
 
 --Part 5--
 
 
 
 --Part 6--
-
