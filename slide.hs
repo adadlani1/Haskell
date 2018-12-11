@@ -151,9 +151,13 @@ random_list n minmax gen = ((r:rs), g2)
 		( r , g) = randomR minmax gen
 		( rs, g2) = random_list (n−1) minmax g	
 		
+-- create_random_candidates takes in a number, the start and end point, a list of times, 2-tuple of minimum and maximum numbers and a random number generator
+-- it forms a list of candidates from the start and end point to give a list of candidates and a random generator in a 2-tuple.	
 create_random_candidates :: Int -> Point -> Point -> [Float] -> (Float,Float) -> StdGen -> ([Candidate], StdGen)
-create_random_candidates 
-
+create_random_candidates number first_point last_point xs minmax gen = ((list_of_candid (divide_list xs (fst (random_number)))), gen)
+		where 
+			list_of_candid = make_candidates first_point last_point
+			random_number = random_list number minmax gen
 
 --Part 4--
 
@@ -170,6 +174,9 @@ crossover cs n g = (cs ++ cs_new, g1)
 
 -- this function takes a list of 2-tuple candidates and a standard generator (random number) and outputs a 2-tuple
 -- with a list of candidates and a random number. 
+-- it takes the inputs and puts them together in a tuple.
+-- uses cross_pair to set out a 2-tuple with a standard generator which randomly generates the second point
+-- this then gets changed into a list of candidates and the number from the previous generator.
 
 cross_pairs :: [(Candidate, Candidate)] −> StdGen −> ([Candidate], StdGen)
 cross_pairs [] g = ([], g)
@@ -177,7 +184,8 @@ cross_pairs (cp:cps) g = (c:cs, g2)
 	where
 		(c, g1) = cross_pair cp g
 		(cs, g2) = cross_pairs cps g1
-
+		
+-- takes a 2-tuple consisting of 2 different candidate
 		
 cross_pair :: (Candidate, Candidate) −> StdGen −> (Candidate, StdGen)
 cross_pair (( s, e, ps1, _ ), (_, _, ps2, _)) g = (( s, e, ps, t ), g1)
