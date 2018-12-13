@@ -185,15 +185,17 @@ cross_pairs (cp:cps) g = (c:cs, g2)
 		(c, g1) = cross_pair cp g
 		(cs, g2) = cross_pairs cps g1
 		
--- takes a 2-tuple consisting of 2 different candidate
-		
+-- takes a 2-tuple consisting of 2 different candidates and a random generator 
+-- uses cross_supp to 
 cross_pair :: (Candidate, Candidate) −> StdGen −> (Candidate, StdGen)
 cross_pair (( s, e, ps1, _ ), (_, _, ps2, _)) g = (( s, e, ps, t ), g1)
 	where
 		(ps, g1) = cross_supp ps1 ps2 g
 		t = total_time s e ps
 
-		
+-- takes two list of points and a random generator to give a list of points and a random number
+-- this is in a 2-tuple.
+-- if 2 empty list of points is given, it gives a 2-tuple with an empty list and a random number
 cross_supp :: [Point] −> [Point] −> StdGen −> ([Point], StdGen)
 cross_supp [] [] g = ([], g)
 cross_supp (c1:cs1) (c2:cs2) g = (( if r < 0.5 then c1 else c2) : xs, g2)
