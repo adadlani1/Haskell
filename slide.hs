@@ -148,10 +148,11 @@ divide_list xs ys | length xs < length ys = [zip xs (take (l) ys)] ++ divide_lis
 
 --Part 3--
 
---random_list returns in a 2-tuple, a list of random Float numbers and a random number generator
---this function takes in an integer which is the n number of randomly generated values
---along with a desired range of numbers and a random number generator.
---Takes them as an input 
+-- random_list returns in a 2-tuple, a list of random Float numbers and a random number generator
+-- this function takes in an integer which is the n number of randomly generated values
+-- along with a desired range of numbers and a random number generator.
+-- Takes them as an input
+-- Every time a random number is generator is used, a new random number is generated and is used for the next candidate
 
 random_list :: Int -> (Float, Float) -> StdGen -> ([Float], StdGen)
 random_list 0 _ gen = ([], gen)
@@ -162,6 +163,7 @@ random_list n minmax gen = ((r:rs), g2)
 
 -- create_random_candidates takes in a number, the start and end point, a list of times, 2-tuple of minimum and maximum numbers and a random number generator
 -- it forms a list of candidates from the start and end point to give a list of candidates and a random generator in a 2-tuple.	
+-- 
 create_random_candidates :: Int -> Point -> Point -> [Float] -> (Float,Float) -> StdGen -> ([Candidate], StdGen)
 create_random_candidates number first_point last_point xs minmax gen = (make_candidates first_point last_point list_of_points, snd random_number)
     where
@@ -204,8 +206,13 @@ cross_pair (( s, e, ps1, _ ), (_, _, ps2, _)) g = (( s, e, ps, t ), g1)
         (ps, g1) = cross_supp ps1 ps2 g
         t = total_time s e ps
 
--- the first function that takes a list of points and has a 50% chance of the points being mixed together
--- 
+-- the first function that takes 2 lists of points and a random number
+-- output is a list of Points and a random number generator
+-- If the number generated is less than 0.5, then the first candidate is appended.
+-- However, if it is closer to 1, then the candidate from the second list is appended
+-- this is a recursive function that continuously happens until the list is empty
+-- every time a new candidate is used, a new random number is generated.
+
 cross_supp :: [Point] -> [Point] -> StdGen -> ([Point], StdGen)
 cross_supp [] [] g = ([], g)
 cross_supp (c1:cs1) (c2:cs2) g = (( if r < 0.5 then c1 else c2) : xs, g2)
@@ -214,6 +221,7 @@ cross_supp (c1:cs1) (c2:cs2) g = (( if r < 0.5 then c1 else c2) : xs, g2)
         (xs, g2) = cross_supp cs1 cs2 g1
 
 --Part 5--
+
 
 
 
