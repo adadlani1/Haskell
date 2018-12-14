@@ -86,9 +86,9 @@ make_candidates start_point end_point (xs:xss) = [(s, e, xs, t s e xs )] ++ make
 
 time_sort :: Candidate -> Candidate -> Ordering
 time_sort (_,_,_,t1) (_,_,_,t2)
-  |  t1 < t2 = LT
-  |  t1 > t2 = GT
-	
+    |  t1 < t2 = LT
+    |  t1 > t2 = GT
+
 sort_by_time :: [Candidate] -> [Candidate]
 sort_by_time [] = []
 sort_by_time c = sortBy time_sort c
@@ -124,13 +124,13 @@ supporting_string (x:xs) = point_to_string x ++ " " ++  supporting_string xs
 candidate_to_string :: Candidate -> String
 candidate_to_string candidate = starting_string ++ supporting_string (get_third candidate) ++ last_string ++ time_string
     where
-        starting_string = point_to_string (get_first candidate )		
+        starting_string = point_to_string (get_first candidate )
         last_string = point_to_string (get_second candidate)
         time_string = "Time: " ++ show (get_fourth candidate)
 
 -- point_to_string which changes the coordinates which are 2-tuples into strings. 
 -- This makes it easier to form the candidate_to_string function
-		
+
 point_to_string :: Point -> String
 point_to_string coordinate = show (fst coordinate) ++ " " ++ show (snd coordinate) ++ "\n"
 
@@ -158,8 +158,8 @@ random_list 0 _ gen = ([], gen)
 random_list n minmax gen = ((r:rs), g2)
     where
         ( r , g) = randomR minmax gen
-        ( rs, g2) = random_list (n-1) minmax g	
-		
+        ( rs, g2) = random_list (n-1) minmax g
+
 -- create_random_candidates takes in a number, the start and end point, a list of times, 2-tuple of minimum and maximum numbers and a random number generator
 -- it forms a list of candidates from the start and end point to give a list of candidates and a random generator in a 2-tuple.	
 create_random_candidates :: Int -> Point -> Point -> [Float] -> (Float,Float) -> StdGen -> ([Candidate], StdGen)
@@ -190,10 +190,10 @@ crossover cs n g = (cs ++ cs_new, g1)
 cross_pairs :: [(Candidate, Candidate)] -> StdGen -> ([Candidate], StdGen)
 cross_pairs [] g = ([], g)
 cross_pairs (cp:cps) g = (c:cs, g2)
-	where
+    where
         (c, g1) = cross_pair cp g
         (cs, g2) = cross_pairs cps g1
-		
+
 -- takes a 2-tuple consisting of 2 different candidates, a random generator and outputs a 2-tuple with a candidate and a random number
 -- ps1 is the list from the first candidate and ps2 is from the second
 -- uses total_time and the start and end points, alongwith the supporting points.
